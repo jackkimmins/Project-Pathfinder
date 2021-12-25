@@ -13,9 +13,11 @@ namespace Project_Pathfinder
                 Map map = new Map();
                 map.Generate();
 
+                // map.DisplayMap();
+
                 Pathfinder finder = new Pathfinder();
                 finder.CalculatePath(map);
-                Console.WriteLine("Distance: " + map.GetDistance());
+                Console.WriteLine("Distance: " + map.Distance());
 
                 Console.ReadKey();
             }

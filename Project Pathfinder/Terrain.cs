@@ -8,27 +8,32 @@ namespace Project_Pathfinder
 {
     public class Terrain
     {
-        public int Seed { get; set; }
+        public int Seed { get; }
         public List<List<int>> MAP { get; }
         public int Size { get; }
         public bool Obstacles { get; }
 
-        public Terrain(bool obstacles = false, int size = 32)
-        {
-            this.Obstacles = obstacles;
-            this.MAP = new List<List<int>>();
-            this.Size = size;
-        }
-
-        //Create a map with the option to add obstacles
-        public void Generate(int seed = 0)
+        public Terrain(int seed = 0, bool obstacles = false, int size = 32)
         {
             if (seed == 0)
             {
                 Random rndSeed = new Random();
                 this.Seed = rndSeed.Next(1, 100000);
             }
+            else
+            {
+                this.Seed = seed;
+            }
 
+            this.Obstacles = obstacles;
+            this.Size = size;
+
+            this.MAP = new List<List<int>>();
+        }
+
+        //Create a map with the option to add obstacles
+        public void Generate()
+        {
             this.MAP.Clear();
 
             Random rnd = new Random(this.Seed);
