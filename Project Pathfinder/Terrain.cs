@@ -63,5 +63,46 @@ namespace Project_Pathfinder
                 this.MAP.Add(row);
             }
         }
+
+        public List<Coordinate> Neighbors(Coordinate p)
+        {
+            List<Coordinate> neighbors = new List<Coordinate>();
+
+            if (p.X > 0)
+            {
+                neighbors.Add(new Coordinate(p.X - 1, p.Y));
+            }
+            if (p.X < this.Size - 1)
+            {
+                neighbors.Add(new Coordinate(p.X + 1, p.Y));
+            }
+            if (p.Y > 0)
+            {
+                neighbors.Add(new Coordinate(p.X, p.Y - 1));
+            }
+            if (p.Y < this.Size - 1)
+            {
+                neighbors.Add(new Coordinate(p.X, p.Y + 1));
+            }
+
+            if (p.X > 0 && p.Y > 0)
+            {
+                neighbors.Add(new Coordinate(p.X - 1, p.Y - 1));
+            }
+            if (p.X < this.Size - 1 && p.Y > 0)
+            {
+                neighbors.Add(new Coordinate(p.X + 1, p.Y - 1));
+            }
+            if (p.X > 0 && p.Y < this.Size - 1)
+            {
+                neighbors.Add(new Coordinate(p.X - 1, p.Y + 1));
+            }
+            if (p.X < this.Size - 1 && p.Y < this.Size - 1)
+            {
+                neighbors.Add(new Coordinate(p.X + 1, p.Y + 1));
+            }
+
+            return neighbors;
+        }
     }
 }

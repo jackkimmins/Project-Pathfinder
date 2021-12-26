@@ -15,8 +15,12 @@ namespace Project_Pathfinder
 
                 // map.DisplayMap();
 
-                M1 finder = new M1(map);
-                finder.CalculatePath();
+                // M1 mark1 = new M1(map);
+                // mark1.CalculatePath();
+
+                M2 mark2 = new M2(map);
+                mark2.CalculatePath();
+
                 Console.WriteLine("Distance: " + map.Distance());
 
                 Console.ReadKey();

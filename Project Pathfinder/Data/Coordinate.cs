@@ -34,5 +34,47 @@ namespace Project_Pathfinder
         {
             Console.WriteLine("X: " + this.X + " Y: " + this.Y);
         }
+
+        //Gets the 8 surrounding neighbors of the current coordinate.
+        public List<Coordinate> Neighbors(int gridSize)
+        {
+            List<Coordinate> neighbors = new List<Coordinate>();
+
+            if (this.X > 0)
+            {
+                neighbors.Add(new Coordinate(this.X - 1, this.Y));
+            }
+            if (this.X < gridSize - 1)
+            {
+                neighbors.Add(new Coordinate(this.X + 1, this.Y));
+            }
+            if (this.Y > 0)
+            {
+                neighbors.Add(new Coordinate(this.X, this.Y - 1));
+            }
+            if (this.Y < gridSize - 1)
+            {
+                neighbors.Add(new Coordinate(this.X, this.Y + 1));
+            }
+
+            if (this.X > 0 && this.Y > 0)
+            {
+                neighbors.Add(new Coordinate(this.X - 1, this.Y - 1));
+            }
+            if (this.X < gridSize - 1 && this.Y > 0)
+            {
+                neighbors.Add(new Coordinate(this.X + 1, this.Y - 1));
+            }
+            if (this.X > 0 && this.Y < gridSize - 1)
+            {
+                neighbors.Add(new Coordinate(this.X - 1, this.Y + 1));
+            }
+            if (this.X < gridSize - 1 && this.Y < gridSize - 1)
+            {
+                neighbors.Add(new Coordinate(this.X + 1, this.Y + 1));
+            }
+
+            return neighbors;
+        }
     }
 }

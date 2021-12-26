@@ -32,7 +32,7 @@ namespace Project_Pathfinder
             Map.DisplayMap();
 
             //Sleep for 1 second
-            //System.Threading.Thread.Sleep(500);
+            System.Threading.Thread.Sleep(500);
         }
 
         public abstract void CalculatePath();
