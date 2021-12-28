@@ -93,10 +93,7 @@ namespace Project_Pathfinder
             return next;
         }
 
-        public M1(Map map) : base(map)
-        {
-
-        }
+        public M1(Map map) : base(map) {}
 
         //This method is used to find the path from start to end.
         public override void CalculatePath()
@@ -114,7 +111,6 @@ namespace Project_Pathfinder
 
                 next.Output();
                 AddStepsToMap();
-                //DisplayPathOnMap(map, path);
 
                 if (next.X == Map.End.X && next.Y == Map.End.Y)
                 {

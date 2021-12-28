@@ -10,9 +10,8 @@ namespace Project_Pathfinder
             {
                 Console.Clear();
 
-                Map map = new Map();
+                Map map = new Map(63);
                 map.Generate();
-
                 // map.DisplayMap();
 
                 // M1 mark1 = new M1(map);
@@ -20,8 +19,9 @@ namespace Project_Pathfinder
 
                 M2 mark2 = new M2(map);
                 mark2.CalculatePath();
+                mark2.Stats();
 
-                Console.WriteLine("Distance: " + map.Distance());
+                // Console.WriteLine("Distance: " + map.Distance());
 
                 Console.ReadKey();
             }

@@ -46,6 +46,12 @@ namespace Project_Pathfinder
             Console.ResetColor();
         }
 
+        //Update the map at the given coordinate.
+        public void UpdateMapAtPosition(Coordinate coord, char value)
+        {
+            this.Terrain.MAP[coord.X][coord.Y] = value;
+        }
+
         //Display map with start and end points
         public void DisplayMap()
         {
@@ -97,6 +103,20 @@ namespace Project_Pathfinder
             }
             
             GenHorsBorderLine(this.Terrain.Size);
+        }
+
+        public void RawOutput()
+        {
+            Console.Clear();
+            for (int i = 0; i < this.Terrain.Size; i++)
+            {
+                for (int j = 0; j < this.Terrain.Size; j++)
+                {
+                    Console.Write(this.Terrain.MAP[i][j]);
+                }
+                Console.WriteLine();
+            }
+            Console.ReadKey();
         }
 
         //Gets the distance between the start and end points using Pythagoras

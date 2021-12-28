@@ -45,7 +45,7 @@ namespace Project_Pathfinder
                     if (this.Obstacles)
                     {
                         //10% chance of being an obstacle
-                        if (rnd.Next(0, 10) == 0)
+                        if (rnd.Next(0, 8) == 0)
                         {
                             row.Add(1);
                         }

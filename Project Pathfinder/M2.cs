@@ -8,214 +8,152 @@ namespace Project_Pathfinder
 {
     class M2 : Pathfinder
     {
-        public M2(Map map) : base(map) {}
+        public M2(Map map) : base(map) { }
 
-        private void CheckCoordinate(ref double lowestF, ref Coordinate temp, Coordinate coord, ref Coordinate next)
-        {
-            temp.G = coord.G + 1;
-            temp.H = Math.Abs(temp.X - Map.End.X) + Math.Abs(temp.Y - Map.End.Y);
-            temp.F = temp.G + temp.H;
-            if (temp.F < lowestF)
+		//Get all the possible cells around the current cell.
+		private static List<Cell> GetWalkableTiles(List<string> map, Cell currentCell, Cell targetCell)
+		{
+			List<Cell> possibleCells = new List<Cell>();
+
+			//Top
+			possibleCells.Add(new Cell { X = currentCell.X, Y = currentCell.Y - 1, Parent = currentCell, Cost = currentCell.Cost + 1 });
+
+			//Bottom
+			possibleCells.Add(new Cell { X = currentCell.X, Y = currentCell.Y + 1, Parent = currentCell, Cost = currentCell.Cost + 1 });
+
+			//Left
+			possibleCells.Add(new Cell { X = currentCell.X - 1, Y = currentCell.Y, Parent = currentCell, Cost = currentCell.Cost + 1 });
+
+			//Right
+			possibleCells.Add(new Cell { X = currentCell.X + 1, Y = currentCell.Y, Parent = currentCell, Cost = currentCell.Cost + 1 });
+
+			//Top Left
+			possibleCells.Add(new Cell { X = currentCell.X - 1, Y = currentCell.Y - 1, Parent = currentCell, Cost = currentCell.Cost + 1.4 });
+
+			//Top Right
+			possibleCells.Add(new Cell { X = currentCell.X + 1, Y = currentCell.Y - 1, Parent = currentCell, Cost = currentCell.Cost + 1.4 });
+
+			//Bottom Left
+			possibleCells.Add(new Cell { X = currentCell.X - 1, Y = currentCell.Y + 1, Parent = currentCell, Cost = currentCell.Cost + 1.4 });
+
+			//Bottom Right
+			possibleCells.Add(new Cell { X = currentCell.X + 1, Y = currentCell.Y + 1, Parent = currentCell, Cost = currentCell.Cost + 1.4 });
+
+			//Gets the distance between the current cell and the target cell.
+			possibleCells.ForEach(cell => cell.SetDistance(targetCell.X, targetCell.Y));
+
+			var maxX = map.First().Length - 1;
+			var maxY = map.Count - 1;
+
+			//Removes all the cells that are out of the map.
+			possibleCells.RemoveAll(cell => cell.X < 0 || cell.Y < 0 || cell.X > maxX || cell.Y > maxY);
+
+			//Removes all the cells that are not walkable, not '0' or not '3'.
+			possibleCells.RemoveAll(cell => map[cell.Y][cell.X] != '0' && map[cell.Y][cell.X] != '3');
+
+			return possibleCells;
+		}
+
+		//Convert 'Map' into a list of strings.
+		private List<string> LoadMap()
+		{
+			var map = new List<string>();
+
+			for (int i = 0; i < Map.Terrain.Size; i++)
             {
-                lowestF = temp.F;
-                next = temp;
-            }
-        }
+				string row = "";
 
-        //Finds the next coordinate to move to.
-        private Coordinate FindNext(ref Map tempMap, List<Coordinate> path)
-        {
-            Coordinate next = new Coordinate(tempMap.Terrain.Size);
-            double lowestF = int.MaxValue;
-
-            foreach (Coordinate coord in path)
-            {
-                int x = coord.X;
-                int y = coord.Y;
-
-                //Check up
-                if (y - 1 >= 0 && tempMap.Terrain.MAP[x][y - 1] == 0)
+                for (int j = 0; j < Map.Terrain.Size; j++)
                 {
-                    Coordinate temp = new Coordinate(x, y - 1);
-                    CheckCoordinate(ref lowestF, ref temp, coord, ref next);
+					row += Map.Terrain.MAP[i][j].ToString();
                 }
 
-                //Check down
-                if (y + 1 < tempMap.Terrain.Size && tempMap.Terrain.MAP[x][y + 1] == 0)
-                {
-                    Coordinate temp = new Coordinate(x, y + 1);
-                    CheckCoordinate(ref lowestF, ref temp, coord, ref next);
-                }
-
-                //Check left
-                if (x - 1 >= 0 && tempMap.Terrain.MAP[x - 1][y] == 0)
-                {
-                    Coordinate temp = new Coordinate(x - 1, y);
-                    CheckCoordinate(ref lowestF, ref temp, coord, ref next);
-                }
-
-                //Check right
-                if (x + 1 < tempMap.Terrain.Size && tempMap.Terrain.MAP[x + 1][y] == 0)
-                {
-                    Coordinate temp = new Coordinate(x + 1, y);
-                    CheckCoordinate(ref lowestF, ref temp, coord, ref next);
-                }
-
-                //Check up-left
-                if (x - 1 >= 0 && y - 1 >= 0 && tempMap.Terrain.MAP[x - 1][y - 1] == 0)
-                {
-                    Coordinate temp = new Coordinate(x - 1, y - 1);
-                    CheckCoordinate(ref lowestF, ref temp, coord, ref next);
-                }
-
-                //Check up-right
-                if (x + 1 < tempMap.Terrain.Size && y - 1 >= 0 && tempMap.Terrain.MAP[x + 1][y - 1] == 0)
-                {
-                    Coordinate temp = new Coordinate(x + 1, y - 1);
-                    CheckCoordinate(ref lowestF, ref temp, coord, ref next);
-                }
-
-                //Check down-left
-                if (x - 1 >= 0 && y + 1 < tempMap.Terrain.Size && tempMap.Terrain.MAP[x - 1][y + 1] == 0)
-                {
-                    Coordinate temp = new Coordinate(x - 1, y + 1);
-                    CheckCoordinate(ref lowestF, ref temp, coord, ref next);
-                }
-
-                //Check down-right
-                if (x + 1 < tempMap.Terrain.Size && y + 1 < tempMap.Terrain.Size && tempMap.Terrain.MAP[x + 1][y + 1] == 0)
-                {
-                    Coordinate temp = new Coordinate(x + 1, y + 1);
-                    CheckCoordinate(ref lowestF, ref temp, coord, ref next);
-                }
+				map.Add(row);
             }
 
-            return next;
-        }
+			return map;
+		}
 
+		//Display stats about the pathfinding algorithm.
+		public void Stats()
+		{
+			Console.Write("Path Steps: " + Path.Count);
+			Console.Write("      Distance: " + Map.Distance());
+			Console.Write("      Seed: " + Map.Terrain.Seed);
+		}
 
-        private List<List<Coordinate>> AllPossiblePaths()
+		public override void CalculatePath()
         {
-            List<List<Coordinate>> paths = new List<List<Coordinate>>();
+			List<string> map = LoadMap();
 
-            foreach (Coordinate coord in Path.Last().Neighbors(Map.Terrain.Size))
-            {
-                //Check that the coord is 0
-                if (Map.Terrain.MAP[coord.X][coord.Y] != 0)
-                {
-                    continue;
-                }
+			//Convert the start and end coordinates to Cell objects
+			Cell start = new Cell(Map.Start.X, Map.Start.Y);
+			Cell end = new Cell(Map.End.X, Map.End.Y);
 
-                Map tempMap = Map;
+			//Sets an estimate of the distance between the start and end points.
+			start.SetDistance(end.X, end.Y);
 
-                //Loop over tempMap.Terrain.MAP and set all the 2 coordinates to 0
-                // for (int i = 0; i < tempMap.Terrain.Size; i++)
-                // {
-                //     for (int j = 0; j < tempMap.Terrain.Size; j++)
-                //     {
-                //         if (tempMap.Terrain.MAP[i][j] == 2)
-                //         {
-                //             tempMap.Terrain.MAP[i][j] = 0;
-                //         }
-                //     }
-                // }
+			List<Cell> activeCells = new List<Cell>();
+			List<Cell> visitedCells = new List<Cell>();
+			activeCells.Add(start);
 
-                List<Coordinate> path = new List<Coordinate>();
-                path = Path;
-                path.Add(coord);
-                tempMap.Terrain.MAP[coord.X][coord.Y] = 2;
+			while (activeCells.Any())
+			{
+				var checkCell = activeCells.OrderBy(x => x.CostDistance).First();
 
+				// Check if we have reached the end cell.
+				if (checkCell.X == end.X && checkCell.Y == end.Y)
+				{
+					Cell cell = checkCell;
 
-                while (path.Count < tempMap.Terrain.Size * tempMap.Terrain.Size)
-                {  
-                    Coordinate next = FindNext(ref tempMap, path);
+					//Trace our steps back to the start and display the path.
+					while (true)
+					{
+						Path.Add(new Coordinate(cell.X, cell.Y));
 
-                    if (next.X == tempMap.End.X && next.Y == tempMap.End.Y)
-                    {
-                        Console.WriteLine("Found path in " + path.Count + " steps.");
-                        paths.Add(path);
-                        break;
-                    }
+						cell = cell.Parent;
 
-                    tempMap.Terrain.MAP[next.X][next.Y] = 2;
+						if (cell == null)
+						{
+							AddStepsToMap();
+							DisplayPathOnMap();
+							return;
+						}
+					}
+				}
 
-                    Console.Clear();
-                    tempMap.DisplayMap();
+				//Add the current cell to the visited list and remove it from the active list.
+				visitedCells.Add(checkCell);
+				activeCells.Remove(checkCell);
 
-                    Console.WriteLine("Naighbor: ");
-                    coord.Output();
-                    Console.WriteLine("--------------------");
-                    Console.WriteLine("Current Coord: ");
-                    next.Output();
-                    Console.WriteLine("End Coord: ");
-                    Map.End.Output();
+				var walkableCells = GetWalkableTiles(map, checkCell, end);
 
-                    Console.ReadKey();
+				foreach (var walkableCell in walkableCells)
+				{
+					//Skip if we have already visited this cell.
+					if (visitedCells.Any(x => x.X == walkableCell.X && x.Y == walkableCell.Y))
+						continue;
 
-                    path.Add(next);
-                }
-            }
+					//Check if there is a shorter path using this cell.
+					if (activeCells.Any(x => x.X == walkableCell.X && x.Y == walkableCell.Y))
+					{
+						var existingTile = activeCells.First(x => x.X == walkableCell.X && x.Y == walkableCell.Y);
+						if (existingTile.CostDistance > checkCell.CostDistance)
+						{
+							activeCells.Remove(existingTile);
+							activeCells.Add(walkableCell);
+						}
+					}
+					else
+					{
+						//Add new cell to the list.
+						activeCells.Add(walkableCell);
+					}
+				}
+			}
 
-            return paths;
-        }
-
-        private Coordinate GetNextStep()
-        {
-            List<List<Coordinate>> paths = AllPossiblePaths();
-
-            List<Coordinate> shortestPath = paths.OrderBy(x => x.Count).First();
-
-            // foreach (Coordinate coord in shortestPath)
-            // {
-            //     coord.Output();
-            // }
-
-            // Console.WriteLine("Outputting: ");
-            // Path.Last().Output();
-
-            //Get the next coordinate in the shortest path after the current coordinate.
-            Coordinate next = shortestPath.SkipWhile(x => x.X != Path.Last().X || x.Y != Path.Last().Y).Skip(1).First();
-
-            // Console.WriteLine("Outputting 2: ");
-            // next.Output();
-
-            return next;
-        }
-
-        public override void CalculatePath()
-        {
-            var data = Map.Start.Neighbors(Map.Terrain.Size);
-
-            Path.Add(Map.Start);
-            
-
-            // 
-
-            while (Path.Count < Map.Terrain.Size * Map.Terrain.Size)
-            {
-                //Get the next step
-                Coordinate nextStep = GetNextStep();
-
-                nextStep.Output();
-                AddStepsToMap();
-                // DisplayPathOnMap();
-
-                foreach (Coordinate coord in Path)
-                {
-                    coord.Output();
-                }
-
-                //If the next step is the end, we're done
-                if (nextStep.X == Map.End.X && nextStep.Y == Map.End.Y)
-                {
-                    Console.WriteLine("Found Final Path!");
-                    DisplayPathOnMap();
-                    break;
-                }
-
-                //Add the next step to the path
-                Path.Add(nextStep);
-            }
-        }
+			DisplayPathOnMap();
+			Console.WriteLine("No Path Found!");
+		}
     }
 }

@@ -15,12 +15,14 @@ namespace Project_Pathfinder
         public double H { get; set; }
         public double F { get; set; }
 
-        public Coordinate Parent { get; set; }
-
-        public Coordinate(int x, int y)
+        public Coordinate(int x = 0, int y = 0)
         {
             this.X = x;
             this.Y = y;
+
+            this.G = 0;
+            this.H = 0;
+            this.F = 0;
         }
 
         public Coordinate(int gridSize)
@@ -33,6 +35,12 @@ namespace Project_Pathfinder
         public void Output()
         {
             Console.WriteLine("X: " + this.X + " Y: " + this.Y);
+        }
+
+        //Find the distance between two coordinates using the Pythagorean theorem.
+        public int DistanceTo(Coordinate coord)
+        {
+            return (int)Math.Sqrt(Math.Pow(this.X - coord.X, 2) + Math.Pow(this.Y - coord.Y, 2));
         }
 
         //Gets the 8 surrounding neighbors of the current coordinate.

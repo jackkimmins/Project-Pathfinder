@@ -13,7 +13,16 @@ namespace Project_Pathfinder
 
         protected Pathfinder(Map map)
         {
+            Console.Title = "Pathfinder";
             this.Map = map;
+        }
+
+        protected void RemoveStepsFromMap()
+        {
+            foreach (Coordinate coord in Path)
+            {
+                Map.Terrain.MAP[coord.X][coord.Y] = 0;
+            }
         }
 
         protected void AddStepsToMap()
